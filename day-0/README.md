@@ -10,11 +10,10 @@
 Complete the [root setup](../README.md) first. From the workshop root:
 
 ```bash
-source .venv/bin/activate
 ./workshop start
 ./workshop doctor
 cd day-0/tutorial
-jupyter lab
+uv run jupyter lab
 ```
 
 Open `day-0.ipynb` and select **Python 3.12 — Agentic AI Workshop**.

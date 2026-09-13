@@ -12,7 +12,7 @@ Learners should use the simpler root command:
 
 Instructor utilities:
 
-- `check_course.py` validates the course structure, notebooks, documentation, dependencies, and links.
+- `check_course.py` validates the course structure, notebooks, documentation, dependencies, and links (run with `uv run python scripts/check_course.py`).
 - `make-student-release.sh` creates a learner copy without QA answers, secrets, environments, or generated state.
 - `start-mlflow.sh` and `stop-mlflow.sh` are called internally by the root `workshop` command.
 

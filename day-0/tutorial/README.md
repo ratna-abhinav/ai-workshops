@@ -8,7 +8,7 @@ Then enter Day 0 and start JupyterLab:
 
 ```bash
 cd day-0/tutorial
-jupyter lab
+uv run jupyter lab
 ```
 
 Select **Python 3.12 — Agentic AI Workshop** if Jupyter asks for a kernel, then run `day-0.ipynb` from top to bottom.

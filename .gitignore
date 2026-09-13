@@ -1,4 +1,35 @@
-# Ignore all hidden files and directories
-.*
-# But keep this .gitignore file
-!.gitignore
+# Python / uv
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# uv lock is committed; uv cache is not
+.uv/
+
+# Workshop runtime state
+.workshop/
+mlruns/
+*.db
+
+# Jupyter
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Secrets (keep .env.example committed)
+.env
+
+# Learner releases and local builds
+student-release/
+
+# Day 7 local data
+day-7/tutorial/mlflow-data/
+day-7/tutorial/temporal-data/
+
+# Node (Day 7 UI, if any)
+.next/
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

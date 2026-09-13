@@ -10,18 +10,26 @@ Fix the first failed check before investigating later symptoms.
 
 ## `pip` and `python` show different versions
 
-Activate the workshop environment and use Python to invoke pip:
+Do not use system `pip` or manual `venv` activation. This project is
+managed with `uv` (`pyproject.toml` + `uv.lock`):
 
 ```bash
-source .venv/bin/activate
-python --version
-python -m pip --version
-python -m pip install -r requirements.txt
+# From the workshop root:
+uv sync
+uv run python --version
+uv run python -c "import ipykernel, jupyterlab, langchain, langgraph, mlflow"
+```
+
+If dependencies look stale, re-sync and verify the lockfile:
+
+```bash
+uv lock --check
+uv sync
 ```
 
 ## Jupyter uses the wrong environment
 
-In Jupyter, select **Kernel → Change Kernel → Python 3.12 — Agentic AI Workshop**. If it is absent, register it again using the command in the root README.
+In Jupyter, select **Kernel → Change Kernel → Python (Agentic AI Workshop)**. If it is absent, register it again using the command in the root README.
 
 ## Port 5001 is already in use
 

@@ -2,15 +2,19 @@
 set -euo pipefail
 
 WORKSHOP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-VENV_DIR="$WORKSHOP_ROOT/.venv"
 STATE_DIR="$WORKSHOP_ROOT/.workshop"
 MLFLOW_LOG="$STATE_DIR/mlflow.log"
 MLFLOW_PID_FILE="$STATE_DIR/mlflow.pid"
 
 mkdir -p "$STATE_DIR"
 
-if [[ ! -f "$VENV_DIR/bin/activate" ]]; then
-  echo "Run the setup steps in README.md first."
+if ! command -v uv >/dev/null 2>&1; then
+  echo "uv is not installed. See README.md section 1."
+  exit 1
+fi
+
+if [[ ! -f "$WORKSHOP_ROOT/pyproject.toml" || ! -f "$WORKSHOP_ROOT/uv.lock" ]]; then
+  echo "pyproject.toml / uv.lock not found. Re-clone the workshop repository."
   exit 1
 fi
 
@@ -25,9 +29,9 @@ if curl -fsS http://127.0.0.1:5001/health >/dev/null 2>&1; then
   exit 1
 fi
 
-source "$VENV_DIR/bin/activate"
+cd "$WORKSHOP_ROOT"
 
-MLFLOW_TRACKING_URI="http://127.0.0.1:5001" nohup mlflow server \
+MLFLOW_TRACKING_URI="http://127.0.0.1:5001" nohup uv run mlflow server \
   --host 127.0.0.1 \
   --port 5001 \
   --backend-store-uri "sqlite:///$STATE_DIR/mlflow.db" \

@@ -8,33 +8,46 @@ You will begin with one model call and gradually build stateful, observable, too
 
 Use these instructions from the workshop root—the folder containing this README.
 
-### 1. Check Python
+### 1. Check Python and uv
+
+Verify that `uv` and a supported Python version (Python 3.12, 3.13, or 3.14) are installed:
 
 ```bash
-python3 --version
+uv --version
+python --version
 ```
 
-The result must start with `Python 3.12`. If it does not, install Python 3.12 before continuing. Do not use the machine's `pip3`; it may belong to another Python installation.
+If `uv` is not installed, install it using the official installer:
+- **macOS/Linux**: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- **Windows (PowerShell)**: `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
 
-Windows learners should use WSL 2 so their commands match the course videos.
+> [!TIP]
+> `uv` can also manage and download Python versions directly. For example, to install and use Python 3.14:
+> ```bash
+> uv python install 3.14
+> ```
 
-### 2. Create the workshop environment
+### 2. Sync the workshop environment with uv
+
+This project is managed with `uv`: dependencies are declared in
+`pyproject.toml` and pinned in `uv.lock`. `uv` reads `.python-version`
+(Python 3.14) and creates/updates `.venv` for you — do not create the
+virtual environment or install packages manually.
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+# From the workshop root (the folder containing pyproject.toml):
+uv sync
 ```
 
-After activation, your terminal prompt normally begins with `(.venv)`.
+To add a dependency later, use `uv add <package>` (which updates
+`pyproject.toml` and `uv.lock`), never edit `uv.lock` by hand.
 
 Register the environment as a Jupyter kernel:
 
 ```bash
-python -m ipykernel install --user \
+uv run python -m ipykernel install --user \
   --name agentic-ai-workshop \
-  --display-name "Python 3.12 — Agentic AI Workshop"
+  --display-name "Python (Agentic AI Workshop)"
 ```
 
 ### 3. Confirm the workshop model is running
@@ -77,10 +90,10 @@ Core checks should show `✓`. Judge0 may show a warning; it is not required unt
 
 ```bash
 cd day-0/tutorial
-jupyter lab
+uv run jupyter lab
 ```
 
-Open `day-0.ipynb`, choose **Python 3.12 — Agentic AI Workshop**, and run one cell at a time from top to bottom.
+Open `day-0.ipynb`, choose **Python (Agentic AI Workshop)**, and run one cell at a time from top to bottom.
 
 ## Course map
 
@@ -137,6 +150,6 @@ When you finish Days 0–6, stop MLflow:
 After editing the course, run:
 
 ```bash
-python scripts/check_course.py
-python QA/check_qa.py
+uv run python scripts/check_course.py
+uv run python QA/check_qa.py
 ```

@@ -8,6 +8,7 @@ mkdir -p "$DESTINATION"
 rsync -a --delete \
   --exclude '.env' \
   --exclude '.git/' \
+  --exclude '.uv/' \
   --exclude '.venv/' \
   --exclude '.workshop/' \
   --exclude 'QA/' \

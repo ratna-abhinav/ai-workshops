@@ -2,7 +2,6 @@
 set -u
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-PYTHON="$ROOT/.venv/bin/python"
 FAILURES=0
 
 pass() { printf "✓ %s\n" "$1"; }
@@ -13,23 +12,36 @@ doctor() {
   echo "Agentic AI Workshop setup check"
   echo
 
-  if [[ -x "$PYTHON" ]]; then
-    VERSION="$($PYTHON --version 2>&1)"
-    [[ "$VERSION" == Python\ 3.12.* ]] && pass "$VERSION" || fail "$VERSION — Python 3.12 is required"
+  if ! command -v uv >/dev/null 2>&1; then
+    fail "uv is not installed — see README.md section 1"
   else
-    fail "Virtual environment missing — run: python3.12 -m venv .venv"
+    pass "uv $(uv --version | awk '{print $2}')"
   fi
 
-  if [[ "${VIRTUAL_ENV:-}" == "$ROOT/.venv" ]]; then
-    pass "Workshop virtual environment active"
+  if [[ -f "$ROOT/pyproject.toml" && -f "$ROOT/uv.lock" ]]; then
+    if (cd "$ROOT" && uv lock --check >/dev/null 2>&1); then
+      pass "uv.lock is in sync with pyproject.toml"
+    else
+      fail "uv.lock is out of date — run: uv lock"
+    fi
   else
-    warn "Environment is not active — run: source .venv/bin/activate"
+    fail "pyproject.toml and uv.lock are missing from the workshop root"
   fi
 
-  if [[ -x "$PYTHON" ]] && "$PYTHON" -c "import ipykernel, jupyterlab, langchain, langgraph, mlflow" >/dev/null 2>&1; then
-    pass "Core Python dependencies import correctly"
+  if VERSION="$(cd "$ROOT" && uv run --no-sync python --version 2>&1)"; then
+    if [[ "$VERSION" =~ Python\ 3\.(12|13|14)\. ]]; then
+      pass "$VERSION (via uv run)"
+    else
+      fail "$VERSION — Python 3.12, 3.13, or 3.14 is required (.python-version pins 3.14)"
+    fi
   else
-    fail "Dependencies incomplete — run: $PYTHON -m pip install -r requirements.txt"
+    fail "Python is unreachable via uv — run: uv sync"
+  fi
+
+  if (cd "$ROOT" && uv run --no-sync python -c "import ipykernel, jupyterlab, langchain, langgraph, mlflow" >/dev/null 2>&1); then
+    pass "Core Python dependencies import correctly (uv-managed environment)"
+  else
+    fail "Dependencies incomplete — run: uv sync"
   fi
 
   if curl -fsS http://127.0.0.1:5001/health >/dev/null 2>&1; then

@@ -32,7 +32,8 @@ def main() -> None:
 
     root_readme = (ROOT / "README.md").read_text()
     for required in (
-        "python3 --version",
+        "uv sync",
+        "uv.lock",
         "./workshop doctor",
         "## Course map",
         "TROUBLESHOOTING.md",
@@ -85,7 +86,7 @@ def main() -> None:
         if not path.exists():
             errors.append(f"missing tutorial notebook: {path.relative_to(ROOT)}")
             continue
-        notebook = json.loads(path.read_text())
+        notebook = json.loads(path.read_text(encoding="utf-8"))
         code_cells = [cell for cell in notebook["cells"] if cell["cell_type"] == "code"]
         if any(cell.get("execution_count") is None for cell in code_cells):
             errors.append(f"unexecuted tutorial cell: {path.relative_to(ROOT)}")
@@ -107,9 +108,31 @@ def main() -> None:
         if text.lower().count("checkpoint") < 3:
             errors.append(f"exercise needs progressive checkpoints: {path.relative_to(ROOT)}")
 
-    for line in (ROOT / "requirements.txt").read_text().splitlines():
-        if line.strip() and not line.startswith("#") and "==" not in line:
-            errors.append(f"unpinned dependency: {line}")
+    pyproject = ROOT / "pyproject.toml"
+    if not pyproject.exists():
+        errors.append("missing pyproject.toml (uv project metadata)")
+    else:
+        pyproject_text = pyproject.read_text()
+        for required in ("[project]", "requires-python", "dependencies"):
+            if required not in pyproject_text:
+                errors.append(f"pyproject.toml is missing {required}")
+        if "requirements.txt" in pyproject_text:
+            errors.append("pyproject.toml should not reference requirements.txt")
+
+    if not (ROOT / "uv.lock").exists():
+        errors.append("missing uv.lock (commit the lockfile; run: uv lock)")
+    if (ROOT / "requirements.txt").exists():
+        errors.append("legacy requirements.txt still exists (migrated to pyproject.toml + uv.lock)")
+
+    python_version_file = ROOT / ".python-version"
+    if not python_version_file.exists():
+        errors.append("missing .python-version (pin 3.12, 3.13, or 3.14 for uv)")
+    elif python_version_file.read_text().strip().split(".")[0:2] not in (
+        ["3", "12"],
+        ["3", "13"],
+        ["3", "14"],
+    ):
+        errors.append(".python-version must pin Python 3.12, 3.13, or 3.14")
 
     link_pattern = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
     for markdown in ROOT.rglob("*.md"):

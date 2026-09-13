@@ -11,10 +11,9 @@ Start with `homework.ipynb` in this folder.
 From the workshop root:
 
 ```bash
-source .venv/bin/activate
 ./workshop start
 cd day-0/exercise
-jupyter lab
+uv run jupyter lab
 ```
 
 Open `homework.ipynb`, select **Python 3.12 — Agentic AI Workshop**, and complete one checkpoint at a time. The unfinished `TODO` cells are intentional, so do not use **Run All** until you have completed them.
