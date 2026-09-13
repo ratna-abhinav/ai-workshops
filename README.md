@@ -52,13 +52,25 @@ To add a dependency later, use `uv add <package>` (which updates
 > `.venv\Scripts\Activate.ps1`), still manage packages with `uv add`,
 > never with `pip install`.
 
-Register the environment as a Jupyter kernel:
+Register the environment as a Jupyter kernel (needed for browser
+JupyterLab; skip this if you run notebooks inside a VS Code-based IDE
+such as Antigravity — see below):
 
 ```bash
 uv run python -m ipykernel install --user \
   --name agentic-ai-workshop \
   --display-name "Python (Agentic AI Workshop)"
 ```
+
+> [!TIP]
+> **VS Code / Antigravity instead of browser JupyterLab?** No kernel
+> registration needed: `uv sync` already put `ipykernel` inside
+> `.venv`. Open the notebook, use the kernel picker (top-right) →
+> Select Another Kernel → Python Environments → choose the project's
+> `.venv` interpreter (`vivek-ai-workshop/.venv/Scripts/python.exe`).
+> The notebooks resolve the workshop root with a relative
+> `sys.path.append("../..")`, so run them with the notebook's own
+> folder as the working directory (the default).
 
 ### 3. Confirm the workshop model is running
 
