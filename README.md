@@ -42,6 +42,16 @@ uv sync
 To add a dependency later, use `uv add <package>` (which updates
 `pyproject.toml` and `uv.lock`), never edit `uv.lock` by hand.
 
+> [!NOTE]
+> There is deliberately no "activate the environment" step. Prefix
+> commands with `uv run` and `uv` picks the project's `.venv`
+> automatically, e.g. `uv run python ...`, `uv run jupyter lab`,
+> `uv run python scripts/check_course.py`. Activating manually is
+> unnecessary; if you ever want a plain activated shell anyway
+> (Git Bash: `source .venv/bin/activate`, PowerShell:
+> `.venv\Scripts\Activate.ps1`), still manage packages with `uv add`,
+> never with `pip install`.
+
 Register the environment as a Jupyter kernel:
 
 ```bash
